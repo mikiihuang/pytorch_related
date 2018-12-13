@@ -3,8 +3,6 @@ import torch.nn as nn
 import torchvision
 import torchvision.transforms as transforms
 
-# Device configuration
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Hyper-parameters
 sequence_length = 28
@@ -48,8 +46,8 @@ class RNN(nn.Module):
     def forward(self, x):
         # Set initial hidden and cell states
         #h0 or c0: [num_layers, batch_size, hidden_size]
-        h0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(device)
-        c0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(device)
+        h0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size)
+        c0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size)
 
 
         # Forward propagate LSTM
