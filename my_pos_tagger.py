@@ -62,7 +62,7 @@ class LSTMPos(nn.Module):
         return tags
 model = LSTMPos(len(word2id),10,10,len(tag2id))
 criterion = nn.NLLLoss()
-optimizer = torch.optim.SGD(model.parameters(),lr=0.1)
+optimizer = torch.optim.Adam(model.parameters(),lr=0.1)
 
 # Embedding的实例接收的是LongTensor
 # inputs = Variable(torch.LongTensor(list(map(lambda x:word2id[x],words))))
