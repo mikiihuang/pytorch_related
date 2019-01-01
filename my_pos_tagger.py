@@ -60,30 +60,43 @@ class LSTMPos(nn.Module):
         out = self.linear(out.view(len(inputs),-1))
         tags = F.log_softmax(out,dim=1)
         return tags
-model = LSTMPos(len(word2id),10,10,len(tag2id))
-criterion = nn.NLLLoss()
-optimizer = torch.optim.Adam(model.parameters(),lr=0.1)
 
-# Embedding的实例接收的是LongTensor
-# inputs = Variable(torch.LongTensor(list(map(lambda x:word2id[x],words))))
+
+
+
+
+model = LSTMPos(len(word2id),10,10,len(tag2id))
+
+criterion = torch.nn.NLLLoss()
+
+
+optimizer_Adam = torch.optim.Adam(model.parameters(),lr=0.1)
+
 
 total_loss = []
 for i in range(300):
     loss_1epoch = 0
+    ij=1
     for word,tag in words_tags_list:
-        optimizer.zero_grad()
+        optimizer_Adam.zero_grad()
         model.hidden = model.init_hidden()
 
-        sentence_in = Variable(torch.LongTensor(list(map(lambda x:word2id[x],word))))
-        targets = Variable(torch.LongTensor(list(map(lambda x:tag2id[x],tag))))
+        # tensor和Variable已经合并了,可以不在外面加Variable()了
+        sentence_in = torch.LongTensor(list(map(lambda x:word2id[x],word)))
+        targets = torch.LongTensor(list(map(lambda x:tag2id[x],tag)))
 
         tag_pred = model(sentence_in)
         loss = criterion(tag_pred,targets)
         loss.backward()
-        optimizer.step()
-        loss_1epoch += loss.item()
+        optimizer_Adam.step()
+
+    loss_1epoch += loss.item()
     total_loss.append(loss_1epoch)
     print("step {}  loss:{}".format((i+1),loss_1epoch))
+
+
+
+
 
 plt.plot(total_loss,"r-")
 plt.show()
