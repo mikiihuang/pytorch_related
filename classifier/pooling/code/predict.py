@@ -6,11 +6,11 @@ import matplotlib.pyplot as plt
 
 from classifier.pooling.code import data_loader
 import train
-model_url  = "yumi"
-word2id, id2word = processing.read_Dict("sourceDict.txt")
+model_url  = "../file/yumi_subj"
+word2id, id2word = processing.read_Dict("../file/SUBJsourceDict.txt")
 
-dev_sentences, dev_lables = processing.reading("../data/cr.dev.txt")
-test_sentences,test_lables = processing.reading("../data/cr.test.txt")
+dev_sentences, dev_lables = processing.reading("../../data/subj.dev.txt")
+test_sentences,test_lables = processing.reading("../../data/subj.test.txt")
 dev_x = []
 dev_y = []
 test_x = []
@@ -23,7 +23,7 @@ for i in range(0, len(dev_lables)):
     dev_y.append(int(target_id))
 for i in range(0, len(test_lables)):
     seq_id = processing.seq2id(test_sentences[i], word2id)
-    target_id = dev_lables[i]
+    target_id = test_lables[i]
     test_x.append(seq_id)
     test_y.append(int(target_id))
 
@@ -36,13 +36,15 @@ test_y_tensor = torch.from_numpy(np.array(test_y))
 plot_dev = []
 plot_test = []
 x = []
+model = pooling.Pooling(len(word2id), 100, 2)
+with torch.no_grad():
+    for i in range(100):
+        # model = pooling.Pooling(len(word2id), 100, 2)
+        model.eval()
+        model.load_state_dict(torch.load(model_url+"/"+str(i+1)+".pt"))
+        correct = 0
+        total = 0
 
-for i in range(10):
-    model = pooling.Pooling(len(word2id), 100, 2)
-    model.load_state_dict(torch.load(model_url+"/"+str(i+1)+".pt"))
-    correct = 0
-    total = 0
-    with torch.no_grad():
         outputs1 = model(dev_x_tensor.long())
         dev_right_num = train.accuracy_num(outputs1, dev_y_tensor)
         dev_acc = float(dev_right_num)/len(dev_y_tensor)*100

@@ -23,7 +23,7 @@ class PoolingLayer(nn.Module):
         # 现在embedded的维度是batch_size * embedding_dim *sequence_length
         # embedded = embedded.view(1,embedded.size(2),embedded.size(1))
         out = F.max_pool1d(embedded,kernel_size = embedded.size(2))
-        out = out.view(-1,self.embedding_size)
+        out = out.squeeze(2)
         out = self.linearLayer(out)
         return out
 #
@@ -33,20 +33,28 @@ class Pooling(nn.Module):
         self.vocab_size = vocab_size
         self.embed_dim = embedding_size
         self.label_num = label_vocab
-
+        self.embed_dropout = 0.5
+        self.fc_dropout = 0.5
 
         self.embeddings = nn.Embedding(self.vocab_size, self.embed_dim)
 
         self.linear1 = nn.Linear(self.embed_dim, self.embed_dim // 2)
         self.linear2 = nn.Linear(self.embed_dim // 2, self.label_num)
+        self.embed_dropout = nn.Dropout(self.embed_dropout)
+        self.fc_dropout = nn.Dropout(self.fc_dropout)
 
 
     def forward(self, input):
         out = self.embeddings(input)
         out = torch.tanh(out)
+        out = self.embed_dropout(out)
         out = torch.transpose(out, 1, 2)
         out = F.max_pool1d(out, out.size(2))
         out = out.squeeze(2)
+        out = self.fc_dropout(out)
         out = self.linear1(F.relu(out))
         out = self.linear2(F.relu(out))
         return out
+
+pool = Pooling(vocab_size=200,embedding_size=100,label_vocab=2)
+print(pool)

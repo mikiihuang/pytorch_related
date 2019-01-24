@@ -35,7 +35,7 @@ def pad(data,vocab,pad_character):
 
 def get_batch(x,y):
     torch_dataset = Data.TensorDataset(x, y)
-    loader = Data.DataLoader(dataset=torch_dataset,batch_size=302,shuffle=False)
+    loader = Data.DataLoader(dataset=torch_dataset,batch_size=200,shuffle=True)
     return loader
     # for x_batch, y_batch in loader:
         # print(x_batch)
@@ -51,9 +51,9 @@ def get_batch(x,y):
 if __name__ == '__main__':
     torch.manual_seed(1)
 
-    word2id, id2word = processing.read_Dict("sourceDict.txt")
+    word2id, id2word = processing.read_Dict("TRECsourceDict.txt")
     print(len(word2id))
-    sentences, lables = processing.reading("../data/cr.train.txt")
+    sentences, lables = processing.reading("../data/trec.train.txt")
     train_x = []
     train_y = []
 

@@ -1,5 +1,6 @@
 import re
 import collections
+import numpy as np
 
 def reading(filename):
     '''
@@ -92,9 +93,24 @@ def seq2id(sentence,vocab):
                 sequence_id.append(vocab["-unk-"])
     return sequence_id
 
+def get_x_y_list(sentence,lable,word2id):
+    x = []
+    y = []
+    for i in range(0, len(lable)):
+        seq_id = seq2id(sentence[i], word2id)
+        target_id = lable[i]
+        x.append(seq_id)
+        y.append(int(target_id))
+
+    return x,y
+
+def get_max_length(x):
+    data_length = [len(item) for item in x]
+    max_length = np.max(data_length)
+    return max_length
 
 if __name__ == '__main__':
-    train_sentences, train_lables = reading("../../data/subj.train.txt")
+    train_sentences, train_lables = reading("../../data/mpqa.train.txt")
     # dev_sentences,dev_labels = reading("../../data/subj.dev.txt")
     # test_sentences,test_labels = reading("../../data/subj.test.txt")
     #
@@ -105,8 +121,8 @@ if __name__ == '__main__':
 
     # # print(len(lables))
     vocab = create_vocab(sentences)
-    vocab_to_file(vocab,"../file/SUBJsourceDict.txt")
-    word2id,id2word = read_Dict("../file/SUBJsourceDict.txt")
+    vocab_to_file(vocab,"../file/MPQAsourceDict.txt")
+    word2id,id2word = read_Dict("../file/MPQAsourceDict.txt")
     # print(word2id)
     # print(id2word)
     # for i in range(0,len(lables)):
